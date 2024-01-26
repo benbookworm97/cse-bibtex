@@ -1,6 +1,8 @@
+%% Possible sort code: https://tex.stackexchange.com/questions/61877/natbib-sorting-and-citation-order-by-appearance
+%%
 %% I found the following code at https://github.com/ErbB4/LaTex-bib/blob/main/CSE-modified.bst
 %% I modified it to follow CSE citation-sequence instead of CSE name-year,
-%% but only focused on article entries so far.
+%% but only focused on article and book entries so far.
 %%
 %% Add the following two lines to your header:
 %% \usepackage[super,sort&compress,comma]{natbib} 
@@ -8,6 +10,8 @@
 %%
 %% And the following where you want your bibliography:
 %% \bibliography{yourbibfile}
+%%
+%% https://github.com/ErbB4/LaTex-bib/blob/main/CSE-modified.bst
 %%
 %%===================================================================
 %% This is file `harun.bst',
@@ -35,7 +39,7 @@
  %   For use with BibTeX version 0.99a or later
  %-------------------------------------------------------------------
  % This bibliography style file is intended for texts in ENGLISH
- % This is an author-year citation style bibliography. As such, it is
+ % This is [citation-sequence] citation style bibliography. As such, it is
  % non-standard LaTeX, and requires a special package file to function properly.
  % Such a package is    natbib.sty   by Patrick W. Daly
  % The form of the \bibitem entries is
@@ -60,6 +64,9 @@
  %   \citeauthor{key} ==>>           Jones et al.
  %   \citeauthor*{key} ==>>          Jones, Baker, and Smith
  %   \citeyear{key} ==>>             1990
+ %
+ %   [when used with \usepackage[super,sort&compress,comma]{natbib},
+ %   \cite{key} ==>>                superscript ordinal number
  %---------------------------------------------------------------------
 
 ENTRY
@@ -111,7 +118,7 @@ FUNCTION {output.nonnull}
         }
         { output.state before.all =
             'write$
-            { add.period$ " " * write$ }
+            { add.semi$ " " * write$ }
           if$
         }
       if$
@@ -277,7 +284,7 @@ FUNCTION {bbl.edby}
 { "edited by" }
 
 FUNCTION {bbl.edition}
-{ "edition" }
+{ "ed." }
 
 FUNCTION {bbl.volume}
 { "volume" }
@@ -1013,8 +1020,6 @@ FUNCTION {book}
       if$
     }
   if$
-  format.date "year" output.check
-  date.block
   format.btitle "title" output.check
   format.edition output
   crossref missing$
@@ -1023,12 +1028,15 @@ FUNCTION {book}
       format.number.series output
       new.sentence
       format.publisher.address output
+      add.semi
     }
     {
       new.block
       format.book.crossref output.nonnull
     }
   if$
+  format.date "year" output.check
+  date.block
   format.doi output
   new.block
   format.note output
@@ -1291,6 +1299,9 @@ FUNCTION {sortify}
 { purify$
   "l" change.case$
 }
+
+
+
 INTEGERS { len }
 FUNCTION {chop.word}
 { 's :=
@@ -1494,8 +1505,8 @@ FUNCTION {presort}
   'sort.key$ :=
 }
 
-ITERATE {presort}
-SORT
+%ITERATE {presort}
+%SORT
 STRINGS { last.label next.extra }
 INTEGERS { last.extra.num last.extra.num.extended last.extra.num.blank number.label }
 FUNCTION {initialize.extra.label.stuff}
@@ -1560,8 +1571,8 @@ FUNCTION {bib.sort.order}
   #1 entry.max$ substring$
   'sort.key$ :=
 }
-ITERATE {bib.sort.order}
-SORT
+%ITERATE {bib.sort.order}
+%SORT
 FUNCTION {begin.bib}
 { preamble$ empty$
     'skip$
